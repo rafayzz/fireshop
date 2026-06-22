@@ -16,58 +16,25 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
-// ── Debug: Check environment variables ────────────────────────
-console.debug("[Firebase Config] Environment variables check:");
-console.debug("  VITE_FIREBASE_API_KEY:", import.meta.env.VITE_FIREBASE_API_KEY ? "✓ Loaded" : "✗ MISSING");
-console.debug("  VITE_FIREBASE_AUTH_DOMAIN:", import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ? "✓ Loaded" : "✗ MISSING");
-console.debug("  VITE_FIREBASE_PROJECT_ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID ? "✓ Loaded" : "✗ MISSING");
-console.debug("  VITE_FIREBASE_STORAGE_BUCKET:", import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ? "✓ Loaded" : "✗ MISSING");
-console.debug("  VITE_FIREBASE_MESSAGING_SENDER_ID:", import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ? "✓ Loaded" : "✗ MISSING");
-console.debug("  VITE_FIREBASE_APP_ID:", import.meta.env.VITE_FIREBASE_APP_ID ? "✓ Loaded" : "✗ MISSING");
-
-// ── Validate all required variables are present ────────────────
-const requiredEnvVars = [
-  "VITE_FIREBASE_API_KEY",
-  "VITE_FIREBASE_AUTH_DOMAIN",
-  "VITE_FIREBASE_PROJECT_ID",
-  "VITE_FIREBASE_STORAGE_BUCKET",
-  "VITE_FIREBASE_MESSAGING_SENDER_ID",
-  "VITE_FIREBASE_APP_ID",
-];
-
-const missingVars = requiredEnvVars.filter(
-  (varName) => !import.meta.env[varName]
-);
-
-if (missingVars.length > 0) {
-  console.error("[Firebase Config] ✗ CRITICAL: Missing environment variables:");
-  missingVars.forEach((varName) => console.error(`  - ${varName}`));
-  console.error("[Firebase Config] ✗ Solution: Check .env.local file exists in /frontend folder");
-  console.error("[Firebase Config] ✗ Make sure to RESTART the dev server after creating .env.local");
-  throw new Error(
-    `Firebase configuration error: Missing ${missingVars.length} environment variable(s). See console for details.`
-  );
-}
-
-console.debug("[Firebase Config] ✓ All environment variables loaded successfully");
-
 // ── Firebase project config ──────────────────────────────────
-// Vite exposes env vars prefixed with VITE_ via import.meta.env
-// These values come from your .env.local file (never hardcode them!)
+// Uses env vars when available (local dev), falls back to hardcoded
+// values for production builds (e.g. Vercel).
+// NOTE: Firebase client-side keys are safe to expose — security is
+//       enforced by Firebase Security Rules, not by hiding these keys.
 const firebaseConfig = {
-  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId:             import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId:     import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY            || "AIzaSyDyxRtEBZholZStYK7ubKhsV_8yNgAUzuI",
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN        || "fireshop-d2eed.firebaseapp.com",
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID         || "fireshop-d2eed",
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET     || "fireshop-d2eed.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "878799241322",
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID             || "1:878799241322:web:c9315407e6141e3d334a13",
+  measurementId:     import.meta.env.VITE_FIREBASE_MEASUREMENT_ID     || "G-PZKC59J04E",
 };
 
 console.debug("[Firebase Config] Configuration loaded:", {
   projectId: firebaseConfig.projectId,
   authDomain: firebaseConfig.authDomain,
-  storageBucket: firebaseConfig.storageBucket,
+  usingEnvVars: !!import.meta.env.VITE_FIREBASE_API_KEY,
 });
 
 // ── Initialize Firebase ──────────────────────────────────────
