@@ -1,0 +1,38 @@
+# Monorepo root .gitignore
+
+# Dependencies (each folder manages its own)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (NEVER commit!)
+.env
+.env.local
+.env.*.local
+.env.*.js
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Firebase Admin SDK & Secrets
+firebase-adminsdk*.json
+*-adminsdk-*.json
+service-account.json
+
+# Temporary files
+*.tmp
+.cache/

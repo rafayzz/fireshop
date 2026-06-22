@@ -1,0 +1,95 @@
+// ============================================================
+// firestore.rules
+// ============================================================
+// WHY DO SECURITY RULES MATTER?
+//   By default, Firestore rejects ALL reads and writes.
+//   Rules define who can access what.
+//   Without proper rules, anyone could read or delete your data!
+//
+// RULE STRUCTURE:
+//   match /collection/{documentId} {
+//     allow read, write: if <condition>;
+//   }
+//
+// KEY CONCEPTS:
+//   request.auth          → the authenticated user (null if not logged in)
+//   request.auth.uid      → their user ID
+//   resource.data         → the existing document's data
+//   request.resource.data → the data being written (new data)
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────────
+    // isLoggedIn(): true if the user is authenticated
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    // isOwner(uid): true if the logged-in user matches the given uid
+    function isOwner(uid) {
+      return isLoggedIn() && request.auth.uid == uid;
+    }
+
+    // isAdmin(): true if user has role "admin" in their Firestore profile
+    // WHY NOT use custom claims? Custom claims require Firebase Admin SDK.
+    // Storing role in Firestore is simpler for beginners.
+    function isAdmin() {
+      return isLoggedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    // ── users collection ──────────────────────────────────────
+    // Path: users/{userId}
+    //
+    // Anyone logged in can read profiles (for admin dashboards etc.)
+    // Only the user themselves can write their OWN profile.
+    // Admins can update any profile (e.g. to change roles).
+    match /users/{userId} {
+      allow read:   if isLoggedIn();
+      allow create: if isOwner(userId);           // only you create your profile
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();                 // only admins can delete users
+    }
+
+    // ── products collection ───────────────────────────────────
+    // Path: products/{productId}
+    //
+    // ANYONE (even unauthenticated) can read products — public catalog.
+    // Only admins can create, update, or delete products.
+    match /products/{productId} {
+      allow read:             if true;            // public!
+      allow create, update, delete: if isAdmin(); // admin only
+    }
+
+    // ── carts collection ─────────────────────────────────────
+    // Path: carts/{userId}
+    //
+    // Each user can only read and write THEIR OWN cart.
+    // You cannot read another user's cart.
+    match /carts/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ── orders collection ─────────────────────────────────────
+    // Path: orders/{orderId}
+    //
+    // Users can read only their own orders.
+    // Users can create orders (placing an order).
+    // Only admins can update orders (e.g. change status to "shipped").
+    // Nobody can delete orders (audit trail).
+    //
+    // The where("userId", "==", uid) in the app matches this rule:
+    // Firestore verifies the query only requests documents the user can access.
+    match /orders/{orderId} {
+      allow read:   if isLoggedIn() &&
+                       (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isLoggedIn() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin();
+      allow delete: if false; // never delete orders
+    }
+  }
+}
