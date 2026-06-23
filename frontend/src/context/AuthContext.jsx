@@ -81,8 +81,11 @@ export function AuthProvider({ children }) {
   // Without this, protected routes would briefly show before redirecting.
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-900">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 dark:border-white/10 border-t-primary-500"></div>
+          <p className="text-sm text-gray-400 dark:text-gray-500">Loading...</p>
+        </div>
       </div>
     );
   }

@@ -1,27 +1,28 @@
 // ============================================================
 // src/pages/ProfilePage.jsx
 // ============================================================
-// FIRESTORE: updateDoc() — partial update of user document
-// ============================================================
 
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { User, Mail, Shield, Calendar, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { updateUserProfile } from "../services/authService";
+import { Layout } from "../components/layout/Layout";
+import { Container } from "../components/ui/Container";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
+import { Badge } from "../components/ui/Badge";
 
 export default function ProfilePage() {
   const { currentUser, userProfile, setUserProfile } = useAuth();
-  const [name, setName]       = useState(userProfile?.name || "");
-  const [saving, setSaving]   = useState(false);
-  const [saved, setSaved]     = useState(false);
+  const [name, setName] = useState(userProfile?.name || "");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   async function handleSave(e) {
     e.preventDefault();
     setSaving(true);
-
-    // updateDoc() — only the "name" field changes; email/role untouched
     await updateUserProfile(currentUser.uid, { name });
-
-    // Update local state so Navbar shows new name instantly
     setUserProfile((prev) => ({ ...prev, name }));
     setSaving(false);
     setSaved(true);
@@ -29,66 +30,90 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Your Profile</h1>
+    <Layout>
+      <Container size="sm">
+        <div className="py-8 lg:py-12">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <h1 className="text-heading font-bold text-gray-900 dark:text-white mb-8">My Profile</h1>
+          </motion.div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-        {/* Avatar placeholder */}
-        <div className="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center text-2xl mb-6">
-          {userProfile?.name?.charAt(0).toUpperCase() || "?"}
-        </div>
-
-        <form onSubmit={handleSave} className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">Full name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm
-                         focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">Email</label>
-            <input
-              type="email"
-              value={currentUser?.email || ""}
-              disabled
-              className="w-full border border-gray-100 bg-gray-50 rounded-lg px-3 py-2.5 text-sm text-gray-400 cursor-not-allowed"
-            />
-            <p className="text-xs text-gray-400 mt-1">Email cannot be changed here</p>
-          </div>
-
-          <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">Role</label>
-            <span className="inline-block text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
-              {userProfile?.role || "customer"}
-            </span>
-          </div>
-
-          <button
-            type="submit"
-            disabled={saving}
-            className={`w-full py-2.5 rounded-lg font-semibold transition-colors
-              ${saved
-                ? "bg-green-500 text-white"
-                : "bg-brand-500 text-white hover:bg-brand-600"
-              } disabled:opacity-60`}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white dark:bg-surface-850 rounded-2xl border border-gray-100 dark:border-white/[0.06] overflow-hidden"
           >
-            {saving ? "Saving…" : saved ? "✓ Saved!" : "Save Changes"}
-          </button>
-        </form>
+            {/* Profile Header */}
+            <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-8">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-2xl font-bold border border-white/20">
+                  {userProfile?.name?.charAt(0)?.toUpperCase() || "?"}
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">
+                    {userProfile?.name || "User"}
+                  </h2>
+                  <p className="text-white/70 text-sm">{currentUser?.email}</p>
+                </div>
+              </div>
+            </div>
 
-        <div className="mt-6 border-t pt-4 text-xs text-gray-400 space-y-1">
-          <p>📚 <strong>Firestore path:</strong> <code>users/{currentUser?.uid}</code></p>
-          <p>📚 <strong>Operation:</strong> <code>updateDoc()</code> — only updates the "name" field</p>
-          <p>📚 <strong>Joined:</strong> {userProfile?.createdAt?.toDate
-            ? userProfile.createdAt.toDate().toLocaleDateString()
-            : "Today"}</p>
+            {/* Profile Form */}
+            <div className="p-6 space-y-6">
+              <form onSubmit={handleSave} className="space-y-5">
+                <Input
+                  label="Full Name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  icon={User}
+                />
+
+                <Input
+                  label="Email Address"
+                  type="email"
+                  value={currentUser?.email || ""}
+                  disabled
+                  icon={Mail}
+                  containerClassName="opacity-60"
+                />
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Role</label>
+                  <Badge variant="primary" size="md" className="gap-1.5">
+                    <Shield size={12} />
+                    {userProfile?.role || "customer"}
+                  </Badge>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Member Since</label>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <Calendar size={14} />
+                    {userProfile?.createdAt?.toDate
+                      ? userProfile.createdAt.toDate().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+                      : "Today"}
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-gray-100 dark:border-white/[0.06]">
+                  <Button
+                    type="submit"
+                    loading={saving}
+                    fullWidth
+                    size="lg"
+                    className={saved ? 'bg-success-500 hover:bg-success-600 from-success-500 to-success-600' : ''}
+                  >
+                    {saving ? "Saving…" : saved ? (
+                      <span className="flex items-center gap-2"><Check size={18} /> Saved!</span>
+                    ) : "Save Changes"}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </Container>
+    </Layout>
   );
 }

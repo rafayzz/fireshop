@@ -1,0 +1,195 @@
+// ============================================================
+// src/components/home/HeroSection.jsx
+// ============================================================
+
+import { motion } from 'framer-motion';
+import { ArrowRight, Sparkles, Star, Shield, Truck } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { Container } from '../ui/Container';
+import { Link } from 'react-router-dom';
+
+export function HeroSection() {
+  return (
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+      {/* Background gradient mesh */}
+      <div className="absolute inset-0 bg-surface-50 dark:bg-surface-900">
+        <div className="absolute inset-0 bg-mesh-gradient" />
+        {/* Animated floating orbs */}
+        <motion.div
+          animate={{ y: [0, -30, 0], x: [0, 15, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-20 right-[20%] w-72 h-72 rounded-full bg-primary-500/10 dark:bg-primary-500/5 blur-3xl"
+        />
+        <motion.div
+          animate={{ y: [0, 20, 0], x: [0, -10, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute bottom-20 left-[10%] w-96 h-96 rounded-full bg-secondary-500/8 dark:bg-secondary-500/5 blur-3xl"
+        />
+        <motion.div
+          animate={{ y: [0, -15, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-purple-500/5 blur-3xl"
+        />
+      </div>
+
+      <Container size="lg" className="relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center py-16 lg:py-0">
+          {/* Left Content */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-8"
+          >
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-500/10 border border-primary-100 dark:border-primary-500/20 text-sm font-medium text-primary-600 dark:text-primary-400">
+                <Sparkles size={14} />
+                New Collection 2026
+              </span>
+            </motion.div>
+
+            {/* Heading */}
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-display tracking-tight text-gray-900 dark:text-white"
+            >
+              Discover{' '}
+              <span className="text-gradient">Premium</span>
+              <br />
+              Products
+            </motion.h1>
+
+            {/* Description */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-lg"
+            >
+              Curated selection of premium products with guaranteed quality, fast shipping, and an exceptional shopping experience you'll love.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
+              <Link to="/shop">
+                <Button size="lg" className="gap-2.5 shadow-lg shadow-primary-500/25">
+                  Browse Collection
+                  <ArrowRight size={18} />
+                </Button>
+              </Link>
+              <Link to="/shop?sort=new">
+                <Button size="lg" variant="outline" className="gap-2">
+                  New Arrivals
+                </Button>
+              </Link>
+            </motion.div>
+
+            {/* Trust Stats */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="flex gap-8 pt-6 border-t border-gray-200 dark:border-white/[0.06]"
+            >
+              {[
+                { value: '50K+', label: 'Happy Customers' },
+                { value: '4.9', label: 'Average Rating' },
+                { value: '24/7', label: 'Support' },
+              ].map((stat, i) => (
+                <div key={i}>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Right — Floating Product Cards */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="relative hidden lg:block"
+          >
+            <div className="relative h-[520px]">
+              {/* Main floating card */}
+              <motion.div
+                animate={{ y: [0, -12, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute top-8 left-8 right-8 bg-white dark:bg-surface-850 rounded-3xl p-6 shadow-elevated border border-gray-100 dark:border-white/[0.06]"
+              >
+                <div className="flex gap-5">
+                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 dark:from-primary-500/10 dark:to-primary-400/5 flex items-center justify-center text-4xl shrink-0">
+                    🎧
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Bestseller</p>
+                    <h3 className="font-bold text-gray-900 dark:text-white mt-1">Premium Wireless Headphones</h3>
+                    <div className="flex items-center gap-1 mt-2">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} size={12} className="fill-warning-400 text-warning-400" />
+                      ))}
+                      <span className="text-xs text-gray-400 ml-1">(245)</span>
+                    </div>
+                    <p className="text-lg font-bold text-primary-500 mt-2">$199.99</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Secondary floating card */}
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                className="absolute bottom-20 left-0 bg-white dark:bg-surface-850 rounded-2xl p-4 shadow-glass border border-gray-100 dark:border-white/[0.06]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-success-50 dark:bg-success-500/10 flex items-center justify-center">
+                    <Shield size={20} className="text-success-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Secure Payment</p>
+                    <p className="text-xs text-gray-500">256-bit SSL</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Third floating card */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+                className="absolute bottom-8 right-0 bg-white dark:bg-surface-850 rounded-2xl p-4 shadow-glass border border-gray-100 dark:border-white/[0.06]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center">
+                    <Truck size={20} className="text-primary-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Free Shipping</p>
+                    <p className="text-xs text-gray-500">On orders $100+</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Background decoration */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-gradient-to-br from-primary-200/30 to-secondary-200/20 dark:from-primary-500/10 dark:to-secondary-500/5 blur-2xl" />
+            </div>
+          </motion.div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+export default HeroSection;
