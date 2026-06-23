@@ -3,38 +3,50 @@
 // ============================================================
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingBag, Star, TrendingUp, Check } from 'lucide-react';
+import { Heart, ShoppingBag, Star, TrendingUp, Check, Package } from 'lucide-react';
 import clsx from 'clsx';
 import { Badge } from '../ui/Badge';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
-export function ProductCard({
-  product = {
-    id: 1,
-    name: 'Premium Product',
-    price: 99.99,
-    originalPrice: 0,
-    rating: 4.8,
-    reviews: 245,
-    image: '🛍️',
-    discount: 0,
-    isNew: false,
-    isTrending: false,
-  },
-}) {
+export function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showAddedNotif, setShowAddedNotif] = useState(false);
+
+  if (!product) return null;
+
+  const {
+    id,
+    name = 'Product',
+    price = 0,
+    originalPrice,
+    rating,
+    reviews,
+    imageUrl,
+    image,
+    category,
+    stock,
+    discount,
+    isNew = false,
+    isTrending = false,
+  } = product;
+
+  // Calculate discount percentage from original price if not provided
+  const discountPercent = discount || (originalPrice && originalPrice > price
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
+    : 0);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (!currentUser) {
+      navigate('/login');
       return;
     }
     addToCart(product);
@@ -48,24 +60,54 @@ export function ProductCard({
     setIsFavorite(!isFavorite);
   };
 
-  const { name, price, originalPrice = 0, rating = 4.8, reviews = 0, image = '🛍️', discount = 0, isNew = false, isTrending = false } = product;
+  // Display image: prefer imageUrl from Firestore, fall back to emoji, then icon
+  const renderImage = () => {
+    if (imageUrl) {
+      return (
+        <motion.img
+          src={imageUrl}
+          alt={name}
+          animate={{ scale: isHovered ? 1.06 : 1 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+      );
+    }
+    if (image) {
+      return (
+        <motion.div
+          animate={{ scale: isHovered ? 1.08 : 1 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="w-full h-full flex items-center justify-center text-6xl select-none"
+        >
+          {image}
+        </motion.div>
+      );
+    }
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Package size={48} className="text-gray-200 dark:text-gray-700" />
+      </div>
+    );
+  };
 
   return (
-    <Link to={`/products/${product.id}`}>
+    <Link to={`/products/${id}`}>
       <motion.div
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         whileHover={{ y: -6 }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        className="group cursor-pointer"
+        className="group cursor-pointer h-full"
       >
-        <div className="relative bg-white dark:bg-surface-850 rounded-2xl border border-gray-100 dark:border-white/[0.06] overflow-hidden transition-all duration-300 shadow-card group-hover:shadow-card-hover group-hover:border-gray-200 dark:group-hover:border-white/[0.1]">
+        <div className="relative bg-white dark:bg-surface-850 rounded-2xl border border-gray-100 dark:border-white/[0.06] overflow-hidden transition-all duration-300 shadow-card group-hover:shadow-card-hover group-hover:border-gray-200 dark:group-hover:border-white/[0.1] h-full flex flex-col">
           {/* Image Container */}
-          <div className="relative h-52 sm:h-60 bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-white/[0.02] dark:to-white/[0.01] overflow-hidden">
+          <div className="relative h-48 sm:h-56 bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-white/[0.02] dark:to-white/[0.01] overflow-hidden">
             {/* Badges */}
-            <div className="absolute top-3 left-3 z-10 flex gap-2">
-              {discount > 0 && (
-                <Badge variant="danger" size="sm">-{discount}%</Badge>
+            <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-1.5">
+              {discountPercent > 0 && (
+                <Badge variant="danger" size="sm">-{discountPercent}%</Badge>
               )}
               {isNew && (
                 <Badge variant="success" size="sm">New</Badge>
@@ -76,16 +118,13 @@ export function ProductCard({
                   Hot
                 </Badge>
               )}
+              {stock !== undefined && stock === 0 && (
+                <Badge variant="gray" size="sm">Sold Out</Badge>
+              )}
             </div>
 
             {/* Product Image */}
-            <motion.div
-              animate={{ scale: isHovered ? 1.08 : 1 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="w-full h-full flex items-center justify-center text-6xl select-none"
-            >
-              {image}
-            </motion.div>
+            {renderImage()}
 
             {/* Favorite Button */}
             <motion.button
@@ -110,7 +149,7 @@ export function ProductCard({
 
             {/* Quick Add to Cart */}
             <AnimatePresence>
-              {isHovered && (
+              {isHovered && stock !== 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -141,38 +180,49 @@ export function ProductCard({
           </div>
 
           {/* Content */}
-          <div className="p-4 sm:p-5">
+          <div className="p-4 sm:p-5 flex-1 flex flex-col">
+            {/* Category */}
+            {category && (
+              <p className="text-xs font-medium text-primary-500 dark:text-primary-400 mb-1.5 uppercase tracking-wider">
+                {category}
+              </p>
+            )}
+
             {/* Name */}
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors mb-2">
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors mb-2 flex-1">
               {name}
             </h3>
 
             {/* Rating */}
-            <div className="flex items-center gap-1.5 mb-3">
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    size={12}
-                    className={clsx(
-                      i < Math.floor(rating)
-                        ? 'fill-warning-400 text-warning-400'
-                        : 'text-gray-200 dark:text-gray-700'
-                    )}
-                  />
-                ))}
+            {rating !== undefined && (
+              <div className="flex items-center gap-1.5 mb-3">
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      size={12}
+                      className={clsx(
+                        i < Math.floor(rating)
+                          ? 'fill-warning-400 text-warning-400'
+                          : 'text-gray-200 dark:text-gray-700'
+                      )}
+                    />
+                  ))}
+                </div>
+                {reviews !== undefined && (
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    ({reviews})
+                  </span>
+                )}
               </div>
-              <span className="text-xs text-gray-400 dark:text-gray-500">
-                ({reviews})
-              </span>
-            </div>
+            )}
 
             {/* Price */}
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline gap-2 mt-auto">
               <span className="text-lg font-bold text-gray-900 dark:text-white">
-                ${price.toFixed(2)}
+                ${typeof price === 'number' ? price.toFixed(2) : price}
               </span>
-              {originalPrice > 0 && originalPrice > price && (
+              {originalPrice && originalPrice > price && (
                 <span className="text-sm text-gray-400 dark:text-gray-500 line-through">
                   ${originalPrice.toFixed(2)}
                 </span>
