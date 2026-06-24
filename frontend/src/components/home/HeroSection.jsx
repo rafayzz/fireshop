@@ -24,7 +24,6 @@ export function HeroSection() {
       {/* Background gradient mesh */}
       <div className="absolute inset-0 bg-surface-50 dark:bg-surface-900">
         <div className="absolute inset-0 bg-mesh-gradient" />
-        {/* Animated floating orbs */}
         <motion.div
           animate={{ y: [0, -30, 0], x: [0, 15, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
@@ -43,13 +42,13 @@ export function HeroSection() {
       </div>
 
       <Container size="lg" className="relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20 items-center py-12 sm:py-16 lg:py-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-14 lg:gap-20 items-center py-16 sm:py-20 lg:py-0">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-6 sm:space-y-8 text-center lg:text-left"
+            className="space-y-8 sm:space-y-10 text-center lg:text-left"
           >
             {/* Badge */}
             <motion.div
@@ -58,7 +57,7 @@ export function HeroSection() {
               transition={{ delay: 0.1 }}
               className="flex justify-center lg:justify-start"
             >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-500/10 border border-primary-100 dark:border-primary-500/20 text-sm font-medium text-primary-600 dark:text-primary-400">
+              <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary-50 dark:bg-primary-500/10 border border-primary-100 dark:border-primary-500/20 text-sm font-medium text-primary-600 dark:text-primary-400">
                 <Sparkles size={14} />
                 New Collection 2026
               </span>
@@ -112,16 +111,16 @@ export function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="flex gap-6 sm:gap-8 pt-6 border-t border-gray-200 dark:border-white/[0.06] justify-center lg:justify-start"
+              className="grid grid-cols-3 gap-6 sm:gap-8 pt-8 sm:pt-10 border-t border-gray-200 dark:border-white/[0.06]"
             >
               {[
                 { value: '50K+', label: 'Happy Customers' },
                 { value: '4.9', label: 'Average Rating' },
                 { value: '24/7', label: 'Support' },
               ].map((stat, i) => (
-                <div key={i} className="text-center lg:text-left">
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
+                <div key={i} className="text-center lg:text-left px-2 sm:px-3">
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-tight">{stat.label}</p>
                 </div>
               ))}
             </motion.div>
@@ -135,34 +134,34 @@ export function HeroSection() {
             className="relative hidden lg:block"
           >
             <div className="relative h-[520px]">
-              {/* Main floating card — uses real product if available */}
+              {/* Main floating card */}
               <motion.div
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute top-8 left-8 right-8 bg-white dark:bg-surface-850 rounded-3xl p-6 shadow-elevated border border-gray-100 dark:border-white/[0.06]"
+                className="absolute top-8 left-8 right-8 bg-white dark:bg-surface-850 rounded-3xl p-8 shadow-elevated border border-gray-100 dark:border-white/[0.06]"
               >
-                <div className="flex gap-5">
-                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 dark:from-primary-500/10 dark:to-primary-400/5 flex items-center justify-center shrink-0 overflow-hidden">
+                <div className="flex gap-6">
+                  <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 dark:from-primary-500/10 dark:to-primary-400/5 flex items-center justify-center shrink-0 overflow-hidden">
                     {featuredProduct?.imageUrl ? (
                       <img src={featuredProduct.imageUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-4xl">🎧</span>
                     )}
                   </div>
-                  <div>
+                  <div className="py-1">
                     <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       {featuredProduct?.category || 'Bestseller'}
                     </p>
-                    <h3 className="font-bold text-gray-900 dark:text-white mt-1 line-clamp-1">
+                    <h3 className="font-bold text-gray-900 dark:text-white mt-1.5 line-clamp-1 text-lg">
                       {featuredProduct?.name || 'Premium Wireless Headphones'}
                     </h3>
-                    <div className="flex items-center gap-1 mt-2">
+                    <div className="flex items-center gap-1 mt-2.5">
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} size={12} className="fill-warning-400 text-warning-400" />
+                        <Star key={i} size={13} className="fill-warning-400 text-warning-400" />
                       ))}
-                      <span className="text-xs text-gray-400 ml-1">(245)</span>
+                      <span className="text-xs text-gray-400 ml-1.5">(245)</span>
                     </div>
-                    <p className="text-lg font-bold text-primary-500 mt-2">
+                    <p className="text-xl font-bold text-primary-500 mt-3">
                       ${featuredProduct?.price?.toFixed(2) || '199.99'}
                     </p>
                   </div>
@@ -173,15 +172,15 @@ export function HeroSection() {
               <motion.div
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute bottom-20 left-0 bg-white dark:bg-surface-850 rounded-2xl p-4 shadow-glass border border-gray-100 dark:border-white/[0.06]"
+                className="absolute bottom-20 left-0 bg-white dark:bg-surface-850 rounded-2xl p-5 shadow-glass border border-gray-100 dark:border-white/[0.06]"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-success-50 dark:bg-success-500/10 flex items-center justify-center">
-                    <Shield size={20} className="text-success-500" />
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-success-50 dark:bg-success-500/10 flex items-center justify-center">
+                    <Shield size={22} className="text-success-500" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">Secure Payment</p>
-                    <p className="text-xs text-gray-500">256-bit SSL</p>
+                    <p className="text-xs text-gray-500 mt-0.5">256-bit SSL</p>
                   </div>
                 </div>
               </motion.div>
@@ -190,15 +189,15 @@ export function HeroSection() {
               <motion.div
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-                className="absolute bottom-8 right-0 bg-white dark:bg-surface-850 rounded-2xl p-4 shadow-glass border border-gray-100 dark:border-white/[0.06]"
+                className="absolute bottom-8 right-0 bg-white dark:bg-surface-850 rounded-2xl p-5 shadow-glass border border-gray-100 dark:border-white/[0.06]"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center">
-                    <Truck size={20} className="text-primary-500" />
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center">
+                    <Truck size={22} className="text-primary-500" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">Free Shipping</p>
-                    <p className="text-xs text-gray-500">On orders $100+</p>
+                    <p className="text-xs text-gray-500 mt-0.5">On orders $100+</p>
                   </div>
                 </div>
               </motion.div>
