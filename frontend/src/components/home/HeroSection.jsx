@@ -20,7 +20,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-[80vh] sm:min-h-[85vh] lg:min-h-[90vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[80vh] sm:min-h-[85vh] lg:min-h-[90vh] flex items-center overflow-hidden pb-8 sm:pb-12">
       {/* Background gradient mesh */}
       <div className="absolute inset-0 bg-surface-50 dark:bg-surface-900">
         <div className="absolute inset-0 bg-mesh-gradient" />
@@ -111,18 +111,20 @@ export function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="grid grid-cols-3 gap-6 sm:gap-8 pt-8 sm:pt-10 border-t border-gray-200 dark:border-white/[0.06]"
+              className="bg-white/60 dark:bg-white/[0.03] backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 sm:p-8"
             >
-              {[
-                { value: '50K+', label: 'Happy Customers' },
-                { value: '4.9', label: 'Average Rating' },
-                { value: '24/7', label: 'Support' },
-              ].map((stat, i) => (
-                <div key={i} className="text-center lg:text-left px-2 sm:px-3">
-                  <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</p>
-                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-tight">{stat.label}</p>
-                </div>
-              ))}
+              <div className="grid grid-cols-3 gap-4 sm:gap-6 divide-x divide-gray-200 dark:divide-white/[0.08]">
+                {[
+                  { value: '50K+', label: 'Happy Customers', emoji: '😊' },
+                  { value: '4.9', label: 'Average Rating', emoji: '⭐' },
+                  { value: '24/7', label: 'Support', emoji: '💬' },
+                ].map((stat, i) => (
+                  <div key={i} className="text-center px-2 sm:px-4">
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 dark:text-white mb-1.5">{stat.value}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-tight">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
             </motion.div>
           </motion.div>
 
