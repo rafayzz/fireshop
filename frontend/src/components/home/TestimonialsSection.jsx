@@ -2,9 +2,8 @@
 // src/components/home/TestimonialsSection.jsx
 // ============================================================
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Star, Quote } from 'lucide-react';
 import { Container } from '../ui/Container';
 
 const testimonials = [
@@ -58,80 +57,19 @@ const testimonials = [
   },
 ];
 
-const CARDS_PER_PAGE = 3;
-const AUTOPLAY_SPEED = 3000; // faster: 3 seconds
-const SWIPE_THRESHOLD = 50;
+// Duplicate the array to create a seamless infinite loop
+const infiniteTestimonials = [...testimonials, ...testimonials];
 
 export function TestimonialsSection() {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [direction, setDirection] = useState(1);
-  const touchStart = useRef(null);
-  const touchEnd = useRef(null);
-
-  const totalPages = Math.ceil(testimonials.length / CARDS_PER_PAGE);
-
-  const paginate = useCallback((dir) => {
-    setDirection(dir);
-    setCurrentPage((prev) => (prev + dir + totalPages) % totalPages);
-  }, [totalPages]);
-
-  // Auto-advance — faster
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-    const timer = setInterval(() => paginate(1), AUTOPLAY_SPEED);
-    return () => clearInterval(timer);
-  }, [isAutoPlaying, paginate]);
-
-  // Current visible testimonials
-  const startIdx = currentPage * CARDS_PER_PAGE;
-  const visibleTestimonials = testimonials.slice(startIdx, startIdx + CARDS_PER_PAGE);
-
-  // Touch / swipe handlers for mobile
-  const handleTouchStart = (e) => {
-    touchEnd.current = null;
-    touchStart.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEnd.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart.current || !touchEnd.current) return;
-    const distance = touchStart.current - touchEnd.current;
-    if (Math.abs(distance) > SWIPE_THRESHOLD) {
-      paginate(distance > 0 ? 1 : -1);
-    }
-    touchStart.current = null;
-    touchEnd.current = null;
-  };
-
-  // Mouse drag for desktop
-  const dragStart = useRef(null);
-
-  const handleMouseDown = (e) => {
-    dragStart.current = e.clientX;
-  };
-
-  const handleMouseUp = (e) => {
-    if (dragStart.current === null) return;
-    const distance = dragStart.current - e.clientX;
-    if (Math.abs(distance) > SWIPE_THRESHOLD) {
-      paginate(distance > 0 ? 1 : -1);
-    }
-    dragStart.current = null;
-  };
-
   return (
-    <section className="section bg-white dark:bg-surface-900">
+    <section className="section bg-white dark:bg-surface-900 overflow-hidden">
       <Container>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="section-header"
+          className="section-header relative z-10"
         >
           <p className="section-label">Customer Reviews</p>
           <h2 className="section-title">What Our Customers Say</h2>
@@ -139,113 +77,54 @@ export function TestimonialsSection() {
             Trusted by thousands of happy customers worldwide
           </p>
         </motion.div>
-
-        {/* Slider — swipeable + scrollable */}
-        <div
-          onMouseEnter={() => setIsAutoPlaying(false)}
-          onMouseLeave={() => setIsAutoPlaying(true)}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          className="cursor-grab active:cursor-grabbing select-none"
-        >
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={currentPage}
-              custom={direction}
-              initial={{ opacity: 0, x: direction > 0 ? 60 : -60 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction > 0 ? -60 : 60 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
-            >
-              {visibleTestimonials.map((testimonial, i) => (
-                <motion.div
-                  key={testimonial.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                  className="relative bg-surface-50 dark:bg-surface-850 rounded-2xl p-7 sm:p-8 border border-gray-100 dark:border-white/[0.06] hover:shadow-card-hover transition-all duration-300"
-                >
-                  {/* Quote */}
-                  <Quote className="w-9 h-9 text-primary-200 dark:text-primary-500/20 mb-5" strokeWidth={1.5} />
-
-                  {/* Rating */}
-                  <div className="flex gap-0.5 mb-4">
-                    {Array.from({ length: 5 }).map((_, j) => (
-                      <Star
-                        key={j}
-                        size={14}
-                        className={j < testimonial.rating ? 'fill-warning-400 text-warning-400' : 'text-gray-200 dark:text-gray-700'}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Text */}
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-7 text-sm sm:text-base">
-                    "{testimonial.text}"
-                  </p>
-
-                  {/* Author */}
-                  <div className="flex items-center gap-3 pt-5 border-t border-gray-100 dark:border-white/[0.06]">
-                    <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center shadow-lg`}>
-                      <span className="text-white text-sm font-bold">{testimonial.initial}</span>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{testimonial.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{testimonial.role}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-8 sm:mt-10">
-            {/* Dots */}
-            <div className="flex items-center gap-2">
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => {
-                    setDirection(i > currentPage ? 1 : -1);
-                    setCurrentPage(i);
-                  }}
-                  className={`transition-all duration-300 rounded-full ${
-                    i === currentPage
-                      ? 'w-8 h-2.5 bg-primary-500'
-                      : 'w-2.5 h-2.5 bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20'
-                  }`}
-                  aria-label={`Go to page ${i + 1}`}
-                />
-              ))}
-            </div>
-
-            {/* Arrows */}
-            <div className="flex items-center gap-2">
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={() => paginate(-1)}
-                className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/[0.06] flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/[0.1] hover:text-gray-900 dark:hover:text-white transition-all"
-                aria-label="Previous"
-              >
-                <ChevronLeft size={18} />
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={() => paginate(1)}
-                className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/[0.06] flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/[0.1] hover:text-gray-900 dark:hover:text-white transition-all"
-                aria-label="Next"
-              >
-                <ChevronRight size={18} />
-              </motion.button>
-            </div>
-          </div>
-        </div>
       </Container>
+
+      {/* Infinite Marquee Slider */}
+      <div className="relative mt-8 sm:mt-12 flex overflow-hidden group">
+        {/* Left and Right Fade Gradients */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 sm:w-48 bg-gradient-to-r from-white dark:from-surface-900 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 sm:w-48 bg-gradient-to-l from-white dark:from-surface-900 to-transparent z-10 pointer-events-none" />
+
+        {/* Marquee Track */}
+        <div className="flex gap-6 sm:gap-8 w-max animate-marquee hover:[animation-play-state:paused] px-4">
+          {infiniteTestimonials.map((testimonial, i) => (
+            <div
+              key={`${testimonial.name}-${i}`}
+              className="w-[320px] sm:w-[380px] lg:w-[420px] shrink-0 bg-surface-50 dark:bg-surface-850 rounded-2xl p-7 sm:p-8 border border-gray-100 dark:border-white/[0.06] hover:shadow-card-hover transition-all duration-300 relative group-hover:opacity-60 hover:!opacity-100"
+            >
+              {/* Quote */}
+              <Quote className="w-9 h-9 text-primary-200 dark:text-primary-500/20 mb-5" strokeWidth={1.5} />
+
+              {/* Rating */}
+              <div className="flex gap-0.5 mb-4">
+                {Array.from({ length: 5 }).map((_, j) => (
+                  <Star
+                    key={j}
+                    size={14}
+                    className={j < testimonial.rating ? 'fill-warning-400 text-warning-400' : 'text-gray-200 dark:text-gray-700'}
+                  />
+                ))}
+              </div>
+
+              {/* Text */}
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-7 text-sm sm:text-base">
+                "{testimonial.text}"
+              </p>
+
+              {/* Author */}
+              <div className="flex items-center gap-3 pt-5 border-t border-gray-100 dark:border-white/[0.06]">
+                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center shadow-lg`}>
+                  <span className="text-white text-sm font-bold">{testimonial.initial}</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">{testimonial.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{testimonial.role}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
