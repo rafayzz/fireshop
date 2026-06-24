@@ -200,7 +200,7 @@
 @layer components {
   /* Section spacing */
   .section {
-    @apply py-20 lg:py-28;
+    @apply py-24 lg:py-32;
   }
 
   /* Section header */
