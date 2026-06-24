@@ -84,7 +84,7 @@ const products = [
     name: "Merino Wool Sweater",
     description: "Lightweight yet warm merino wool crew neck. Temperature regulating, moisture-wicking, and naturally odor resistant.",
     price: 74.99,
-    imageUrl: "https://images.unsplash.com/photo-1434389677669-e08b4cda3a00?w=600&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&q=80",
     category: "Clothing",
     stock: 22,
   },

@@ -15,7 +15,7 @@ export function Container({ children, className, size = 'lg' }) {
   };
 
   return (
-    <div className={clsx('mx-auto px-6 sm:px-8 lg:px-12 xl:px-16', sizes[size], className)}>
+    <div className={clsx('mx-auto px-6 sm:px-10 md:px-16 lg:px-24 xl:px-32', sizes[size], className)}>
       {children}
     </div>
   );

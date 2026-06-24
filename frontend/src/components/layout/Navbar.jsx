@@ -104,7 +104,7 @@ export function Navbar() {
           : 'bg-transparent border-b border-transparent'
       )}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 xl:px-16">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 lg:px-24 xl:px-32">
         <div className="flex items-center justify-between h-16 lg:h-[72px]">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group shrink-0">
